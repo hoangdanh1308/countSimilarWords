@@ -1,0 +1,142 @@
+#include <stdio.h>
+#include <stdint.h>
+#include <stdbool.h>
+
+
+char originalString[] = "danh, dep trai duy dep gai, danh duy danh trai gai gai trai thoi thoi";
+int lengthString = sizeof(originalString);
+
+void swapString(char inputString[], int index1, int length1, int index2, int length2){
+    if (length1 == length2){
+        char tempString[7];
+        for (int i = index1, j = 0; i < index1 + length1,j < length1; i++,j++){
+            tempString[j] = inputString[i];
+        }
+        for (int i = index1, j = index2; i < index1 + length1,j < index2 + length2; i++,j++){
+            inputString[i] = inputString[j];
+        }
+        for (int i = index2, j = 0; i < index2 + length2,j < length2; i++,j++){
+            inputString[i] = tempString[j];
+        }
+    } else if(length1-length2 > 0){
+        char tempString[7];
+        int distance = length1 - length2;
+        for (int i = index1, j = 0; i < index1 + length1,j < length1; i++,j++){
+            tempString[j] = inputString[i];
+        }
+        for (int i = index1; i < index2 + length2; i++){
+            inputString[i] = inputString[i + distance];
+        }
+        for (int i = index1, j = index2 - distance; i < index1 + length2,j < index2 - distance + length2; i++,j++){
+            inputString[i] = inputString[j];
+        }
+        for (int i = index2 - distance, j = 0; i < index2 - distance + length1, j < length1; i++, j++){
+            inputString[i] = tempString[j];
+        }
+    } else if(length2 - length1 > 0){
+        char tempString[7];
+        int distance = length2 - length1;
+        for (int i = index2, j = 0; i < index2 + length2,j < length2; i++,j++){
+            tempString[j] = inputString[i];
+        }
+        for (int i = index2 + length2 - 1; i >= index1; i--){
+            inputString[i] = inputString[i - distance];
+        }
+        for (int i = index2 + distance, j = index1 + distance ; i < index2 + distance + length1, j < index1 + distance + length1; i++, j++){
+            inputString[i] = inputString[j];
+        }
+        for (int i = index1, j = 0; i < index1 + length2,j < length2; i++,j++){
+            inputString[i] = tempString[j];
+        }
+    }
+}
+int nextIndex(char inputString[], int beginIndex){
+    for(int i = beginIndex; i < lengthString; i++){
+        if(inputString[i] == ' '){
+            if (inputString[i + 1] != ' '){
+                return i + 1;
+            } else continue;
+        }
+    }
+}
+int finishIndex(char inputString[], int lengthString){
+    for (int i = lengthString - 1; i > 1; i --){
+        if(inputString[i] == ' '){
+            return i + 1;
+        }
+    }
+}
+
+void sortString(char inputString[]){
+    int totalWord = 0;
+    for (int i = 0; i < lengthString; i++){
+        if(inputString[i] == ' '){
+            totalWord++;
+        }
+    }
+
+    for (int i = 0; i < totalWord; i++){
+        for (int j = 0; j < lengthString - 2; j = nextIndex(inputString, j)){
+                if (inputString[j] > inputString[nextIndex(inputString, j)]){
+                swapString(inputString, j, nextIndex(inputString, j) - 1 - j, nextIndex(inputString, j), nextIndex(inputString,nextIndex(inputString, j))-1-nextIndex(inputString, j));
+                }
+        }
+    }
+    for (int i = 0; i < totalWord; i++){
+        for (int j = 1; j < lengthString - 2; j = nextIndex(inputString, j) + 1){
+            if(inputString[nextIndex(inputString, j) + 1] != ' ' && inputString[j - 1] == inputString[nextIndex(inputString,j)]){
+                if (inputString[j] > inputString[nextIndex(inputString, j) + 1]){
+                swapString(inputString, j - 1, nextIndex(inputString, j) - 1 - j + 1, nextIndex(inputString, j), nextIndex(inputString,nextIndex(inputString, j))-1-nextIndex(inputString, j));
+                }
+            } else {
+                continue;}
+    }
+    for (int i = 0; i < totalWord; i++){
+        for (int j = 2; j < lengthString - 2; j = nextIndex(inputString, j) + 2){
+            if(inputString[nextIndex(inputString, j) + 1] != ' '&& inputString[nextIndex(inputString, j) + 2] != ' ' && inputString[j - 2] == inputString[nextIndex(inputString,j)] && inputString[j - 1] == inputString[nextIndex(inputString,j)+1] ){
+                if (inputString[j] > inputString[nextIndex(inputString, j) + 2]){
+                swapString(inputString, j - 2, nextIndex(inputString, j) - 1 - j + 2, nextIndex(inputString, j), nextIndex(inputString,nextIndex(inputString, j))-1-nextIndex(inputString, j));
+                }
+            } else {
+                continue;}
+    }
+}
+}
+}
+
+bool compareString(char inputString[], int index1, int length1, int index2, int length2){
+    for (int i = index1, j = index2; i < index1 + length1,j < index2 + length2; i++,j++){
+            if (inputString[i] != inputString[j]){
+                return false;
+            }
+        }
+    return true;
+}
+
+void countSimilarWords(char inputString[]){
+    int countSimilarWord = 1;
+    for (int j = 0; j < lengthString; j = nextIndex(inputString, j)){
+        if (compareString(inputString, j, nextIndex(inputString, j) - 1 - j, nextIndex(inputString, j), nextIndex(inputString,nextIndex(inputString, j))-1-nextIndex(inputString, j) )){
+            countSimilarWord++;
+        }else if (countSimilarWord >= 2){
+                for(int i = j; i < nextIndex(inputString, i) - 1; i++){
+                    printf("%c",inputString[i]);
+                }
+                printf(" xuat hien %d lan\n",countSimilarWord);
+                countSimilarWord = 1;
+            }
+        }
+        if(countSimilarWord - 1 >=2 ){
+                for(int i = finishIndex(inputString,lengthString); i < lengthString -1; i++){
+                    printf("%c",inputString[i]);
+                }
+                printf(" xuat hien %d lan\n",countSimilarWord - 1);
+            }
+}
+ 
+int main(int argc, char const *argv[])
+{
+    sortString(originalString);
+    countSimilarWords(originalString);
+    return 0;
+}
