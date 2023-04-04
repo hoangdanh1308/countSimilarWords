@@ -1,0 +1,56 @@
+#include <stdio.h>
+#include <stdint.h>
+#include <stdbool.h>
+
+
+char originalString[] = "danh dep trai, duy dep gai danh duy danh gai gai trai trai";
+int lengthString = sizeof(originalString);
+
+int nextIndex(char inputString[], int beginIndex){
+    for(int i = beginIndex; i < lengthString; i++){
+        if(inputString[i] == ' '){
+            if (inputString[i + 1] != ' '){
+                return i + 1;
+            } else continue;
+        }
+    }
+}
+
+bool compareString(char inputString[], int index1, int length1, int index2, int length2){
+    for (int i = index1, j = index2; i < index1 + length1,j < index2 + length2; i++,j++){
+            if (inputString[i] != inputString[j]){
+                return false;
+            }
+        }
+    return true;
+}
+void countSimilarWords(char inputString[]){
+    int countSimilarWord = 1;
+    for(int i = 0; i < lengthString - 1; i = nextIndex(inputString,i)){
+        for (int j = nextIndex(inputString,i) ; j < lengthString - 1; j = nextIndex(inputString, j)){
+        if (compareString(inputString, i, nextIndex(inputString, i) - 1 - i, j, nextIndex(inputString, j) - 1 - j )){
+            countSimilarWord++;
+            for(int p = j; p < nextIndex(inputString, j) - 1 ; p++){
+                inputString[p] = '$';
+            }
+            }
+        }
+       if (countSimilarWord >= 2){
+        if(inputString[i] == '$') {
+            countSimilarWord = 1; 
+            continue;
+            }
+                for(int k = i; k < nextIndex(inputString, k) - 1; k++){
+                    if(inputString[k]==',' || inputString[k]=='.') continue;
+                    printf("%c",inputString[k]);
+                }
+                printf(" xuat hien %d lan\n",countSimilarWord);
+            }
+            countSimilarWord = 1; 
+        }
+}
+int main(int argc, char const *argv[])
+{
+    countSimilarWords(originalString);
+     return 0;
+}
